@@ -548,10 +548,10 @@ class TinyGsmSim7600 : public TinyGsmModem<TinyGsmSim7600>,
    * disable
    */
   String setGNSSModeImpl(uint8_t mode, bool dpo) {
-    String res;
-    sendAT(GF("+CGNSSMODE="), mode, ",", dpo);
-    if (waitResponse(10000L, res) != 1) { return ""; }
-    res.replace(GSM_NL, "");
+        sendAT(GF("+CGPS?"));
+    if (waitResponse(GF(GSM_NL "+CGPS?:")) != 1) { return ""; }
+    String res = stream.readStringUntil('\n');
+    waitResponse();
     res.trim();
     return res;
   }
@@ -559,7 +559,7 @@ class TinyGsmSim7600 : public TinyGsmModem<TinyGsmSim7600>,
   uint8_t getGNSSModeImpl() {
     sendAT(GF("+CGPS?"));
     if (waitResponse(GF(GSM_NL "+CGPS?:")) != 1) { return 0; }
-    return stream.readStringUntil(',').toInt();
+    return stream.readStringUntil('\n').toInt();
   }
 
 
